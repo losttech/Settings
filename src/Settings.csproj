@@ -4,7 +4,7 @@
     <TargetFramework>netstandard1.4</TargetFramework>
     <AssemblyName>LostTech.App.Settings</AssemblyName>
     <RootNamespace>LostTech.App</RootNamespace>
-    <Version>0.1</Version>
+    <VersionPrefix>0.1</VersionPrefix>
     <Authors>Victor Milovanov</Authors>
     <Company>Lost Tech LLC</Company>
     <Product>LostTech.App</Product>
@@ -12,8 +12,6 @@
 - asynchronous
 - autosave
 - data bindable</Description>
-    <AssemblyVersion>0.1</AssemblyVersion>
-    <FileVersion>0.1</FileVersion>
     <RepositoryType>git</RepositoryType>
     <PackageTags>app settings async autosave</PackageTags>
   </PropertyGroup>
