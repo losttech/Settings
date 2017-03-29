@@ -30,6 +30,9 @@
                 throw new ArgumentNullException(nameof(fileName));
 
             var file = await this.folder.GetFile(fileName).ConfigureAwait(false);
+            if (file == null)
+                return null;
+
             T value;
             using (var stream = await file.OpenAsync(FileAccess.Read).ConfigureAwait(false))
                 value = await deserializerFactory.MakeDeserializer<T>()(stream).ConfigureAwait(false);
