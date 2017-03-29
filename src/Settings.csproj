@@ -5,6 +5,7 @@
     <AssemblyName>LostTech.App.Settings</AssemblyName>
     <RootNamespace>LostTech.App</RootNamespace>
     <VersionPrefix>0.1</VersionPrefix>
+    <AssemblyVersion>0.1</AssemblyVersion>
     <Authors>Victor Milovanov</Authors>
     <Company>Lost Tech LLC</Company>
     <Product>LostTech.App</Product>
@@ -19,7 +20,7 @@
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
     <PackageReference Include="LostTech.Checkpoint" Version="0.1.0-b2017032402" />
-    <PackageReference Include="PCLStorage.Abstractions" Version="[1.0.2,2.0)" />
+    <PackageReference Include="PCLStorage.Abstractions" Version="1.0.4-b2017032801" />
     <PackageReference Include="RecursiveChangeNotifier" Version="0.3.0-b2017032602" />
   </ItemGroup>
 
