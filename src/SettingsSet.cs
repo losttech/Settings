@@ -56,7 +56,7 @@
                 this.ScheduleSave();
         }
 
-        private void ScheduleSave()
+        public void ScheduleSave()
         {
             var freezedCopy = this.freezer(this.Value);
             this.autosaveService.Chain(async () => {
