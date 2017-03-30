@@ -41,5 +41,25 @@
                 this.freezerFactory.MakeFreezer<T, TFreezed>(),
                 this.serializerFactory.MakeSerializer<TFreezed>());
         }
+
+        public Task<SettingsSet<T, TFreezed>> LoadOrCreate<T, TFreezed>([NotNull] string fileName)
+            where T : class, new()
+            => this.LoadOrCreate<T, TFreezed>(fileName, () => new T());
+
+        public async Task<SettingsSet<T, TFreezed>> LoadOrCreate<T, TFreezed>([NotNull] string fileName, Func<T> defaultSettings)
+            where T : class
+        {
+            if (defaultSettings == null)
+                throw new ArgumentNullException(nameof(defaultSettings));
+
+            var settings = await this.Load<T, TFreezed>(fileName).ConfigureAwait(false);
+            if (settings != null)
+                return settings;
+
+            var file = await this.folder.CreateFileAsync(fileName, CreationCollisionOption.FailIfExists).ConfigureAwait(false);
+            return new SettingsSet<T, TFreezed>(file, defaultSettings(),
+                this.freezerFactory.MakeFreezer<T, TFreezed>(),
+                this.serializerFactory.MakeSerializer<TFreezed>());
+        }
     }
 }
