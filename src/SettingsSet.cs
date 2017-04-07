@@ -69,10 +69,10 @@
         [NotNull]
         public T Value { get; }
 
-        public async Task DisposeAsync()
+        public Task DisposeAsync()
         {
             this.changeListener?.Dispose();
-            await this.autosaveService.DisposeAsync();
+            return this.autosaveService.DisposeAsync();
         }
 
         [NotifyPropertyChangedInvocator]
