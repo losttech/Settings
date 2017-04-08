@@ -62,6 +62,7 @@
             this.autosaveService.Chain(async () => {
                 using (var stream = await file.OpenAsync(FileAccess.ReadAndWrite).ConfigureAwait(false)) {
                     await this.serializer(stream, freezedCopy).ConfigureAwait(false);
+                    await stream.FlushAsync().ConfigureAwait(false);
                 }
             });
         }
