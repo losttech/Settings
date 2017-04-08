@@ -58,10 +58,10 @@
 
         public void ScheduleSave()
         {
-            var freezedCopy = this.freezer(this.Value);
+            var frozenCopy = this.freezer(this.Value);
             this.autosaveService.Chain(async () => {
                 using (var stream = await file.OpenAsync(FileAccess.ReadAndWrite).ConfigureAwait(false)) {
-                    await this.serializer(stream, freezedCopy).ConfigureAwait(false);
+                    await this.serializer(stream, frozenCopy).ConfigureAwait(false);
                     await stream.FlushAsync().ConfigureAwait(false);
                 }
             });

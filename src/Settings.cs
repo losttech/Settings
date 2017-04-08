@@ -57,9 +57,11 @@
                 return settings;
 
             var file = await this.folder.CreateFileAsync(fileName, CreationCollisionOption.FailIfExists).ConfigureAwait(false);
-            return new SettingsSet<T, TFreezed>(file, defaultSettings(),
+            var result = new SettingsSet<T, TFreezed>(file, defaultSettings(),
                 this.freezerFactory.MakeFreezer<T, TFreezed>(),
                 this.serializerFactory.MakeSerializer<TFreezed>());
+            result.ScheduleSave();
+            return result;
         }
     }
 }
