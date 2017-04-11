@@ -61,6 +61,7 @@
             var frozenCopy = this.freezer(this.Value);
             this.autosaveService.Chain(async () => {
                 using (var stream = await file.OpenAsync(FileAccess.ReadAndWrite).ConfigureAwait(false)) {
+                    stream.SetLength(0);
                     await this.serializer(stream, frozenCopy).ConfigureAwait(false);
                     await stream.FlushAsync().ConfigureAwait(false);
                 }
