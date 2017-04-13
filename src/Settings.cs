@@ -1,17 +1,20 @@
 ﻿namespace LostTech.App
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using JetBrains.Annotations;
     using PCLStorage;
     using FileAccess = PCLStorage.FileAccess;
 
-    public sealed class Settings
+    public sealed class Settings: ISettingsSet
     {
         readonly IFolder folder;
         readonly IFreezerFactory freezerFactory;
         readonly ISerializerFactory serializerFactory;
         readonly IDeserializerFactory deserializerFactory;
+        readonly Stack<ISettingsSet> loadedSettings = new Stack<ISettingsSet>();
 
         public Settings([NotNull] IFolder folder,
             [NotNull] IFreezerFactory freezerFactory,
@@ -37,9 +40,11 @@
             using (var stream = await file.OpenAsync(FileAccess.Read).ConfigureAwait(false))
                 value = await deserializerFactory.MakeDeserializer<T>()(stream).ConfigureAwait(false);
 
-            return new SettingsSet<T, TFreezed>(file, value,
+            var result = new SettingsSet<T, TFreezed>(file, value,
                 this.freezerFactory.MakeFreezer<T, TFreezed>(),
                 this.serializerFactory.MakeSerializer<TFreezed>());
+            this.loadedSettings.Push(result);
+            return result;
         }
 
         public Task<SettingsSet<T, TFreezed>> LoadOrCreate<T, TFreezed>([NotNull] string fileName)
@@ -61,7 +66,24 @@
                 this.freezerFactory.MakeFreezer<T, TFreezed>(),
                 this.serializerFactory.MakeSerializer<TFreezed>());
             result.ScheduleSave();
+            this.loadedSettings.Push(result);
             return result;
+        }
+
+        public void ScheduleSave()
+        {
+            foreach (var item in this.loadedSettings)
+                item.ScheduleSave();
+        }
+
+        public Task DisposeAsync()
+        {
+            if (this.loadedSettings.Count == 0)
+                return Task.CompletedTask;
+
+            var disposeTasks = this.loadedSettings.Select(set => set.DisposeAsync()).ToArray();
+            this.loadedSettings.Clear();
+            return Task.WhenAll(disposeTasks);
         }
     }
 }

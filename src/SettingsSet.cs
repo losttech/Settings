@@ -12,7 +12,7 @@
 
     using Stream = System.IO.Stream;
 
-    public sealed class SettingsSet<T, TFreezed>: INotifyPropertyChanged
+    public sealed class SettingsSet<T, TFreezed>: ISettingsSet, INotifyPropertyChanged
         where T: class
     {
         readonly IFile file;
