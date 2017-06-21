@@ -9,7 +9,6 @@
     using LostTech.Checkpoint;
     using PCLStorage;
     using ThomasJaworski.ComponentModel;
-
     using Stream = System.IO.Stream;
 
     public sealed class SettingsSet<T, TFreezed>: ISettingsSet, INotifyPropertyChanged
@@ -56,16 +55,47 @@
                 this.ScheduleSave();
         }
 
+        const int FileShareViolation = unchecked((int)0x80070020);
+
         public void ScheduleSave()
         {
             var frozenCopy = this.freezer(this.Value);
-            this.autosaveService.Chain(async () => {
-                using (var stream = await file.OpenAsync(FileAccess.ReadAndWrite).ConfigureAwait(false)) {
-                    stream.SetLength(0);
-                    await this.serializer(stream, frozenCopy).ConfigureAwait(false);
-                    await stream.FlushAsync().ConfigureAwait(false);
+
+            async Task<Exception> TrySave()
+            {
+                try {
+                    using (var stream = await this.file.OpenAsync(FileAccess.ReadAndWrite).ConfigureAwait(false)) {
+                        stream.SetLength(0);
+                        await this.serializer(stream, frozenCopy).ConfigureAwait(false);
+                        await stream.FlushAsync().ConfigureAwait(false);
+                    }
+                    return null;
+                } catch (System.IO.IOException e) when (e.HResult == FileShareViolation) {
+                    return e;
                 }
-            });
+            }
+            this.autosaveService.Chain(() => Retry(TrySave));
+        }
+
+        static async Task<Exception> Retry(Func<Task<Exception>> action, int attemptCount = 5, int initialRetryDelayMs = 250)
+        {
+            if (attemptCount <= 0)
+                throw new ArgumentOutOfRangeException(nameof(attemptCount));
+            if (initialRetryDelayMs < 0)
+                throw new ArgumentOutOfRangeException(nameof(initialRetryDelayMs));
+
+            Exception lastError = null;
+            for (int i = 0; i < attemptCount; i++)
+            {
+                lastError = await action().ConfigureAwait(false);
+                if (lastError == null)
+                    return null;
+
+                await Task.Delay(initialRetryDelayMs).ConfigureAwait(false);
+                initialRetryDelayMs *= 2;
+            }
+
+            return lastError;
         }
 
         [NotNull]
