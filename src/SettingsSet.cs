@@ -77,7 +77,7 @@
             this.autosaveService.Chain(() => Retry(TrySave));
         }
 
-        static async Task<Exception> Retry(Func<Task<Exception>> action, int attemptCount = 5, int initialRetryDelayMs = 250)
+        static async Task Retry(Func<Task<Exception>> action, int attemptCount = 5, int initialRetryDelayMs = 250)
         {
             if (attemptCount <= 0)
                 throw new ArgumentOutOfRangeException(nameof(attemptCount));
@@ -89,13 +89,13 @@
             {
                 lastError = await action().ConfigureAwait(false);
                 if (lastError == null)
-                    return null;
+                    return;
 
                 await Task.Delay(initialRetryDelayMs).ConfigureAwait(false);
                 initialRetryDelayMs *= 2;
             }
 
-            return lastError;
+            throw lastError;
         }
 
         [NotNull]
