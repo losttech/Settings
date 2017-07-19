@@ -19,8 +19,9 @@
             try {
                 IFolder directory = await FileSystem.Current.GetFolderFromPathAsync(temp);
                 IFile file = await directory.CreateFileAsync(nameof(this.ActuallySaves), CreationCollisionOption.ReplaceExisting);
-                var settingsSet = new SettingsSet<string, byte[]>(file, value, s => Encoding.UTF8.GetBytes(s),
-                    async (stream, data) => {
+                var settingsSet = new SettingsSet<string, byte[]>(file, value, 
+                    freezer: s => Encoding.UTF8.GetBytes(s),
+                    serializer: async (stream, data) => {
                         stream.Write(data, 0, data.Length);
                         await stream.FlushAsync().ConfigureAwait(false);
                     });
