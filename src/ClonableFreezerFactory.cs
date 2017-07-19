@@ -3,6 +3,7 @@
     using System;
     using System.Linq;
     using System.Reflection;
+    using LostTech.App.DataBinding;
 
     public sealed class ClonableFreezerFactory : IFreezerFactory
     {
