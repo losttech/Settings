@@ -27,6 +27,8 @@
             this.deserializerFactory = deserializerFactory ?? throw new ArgumentNullException(nameof(deserializerFactory));
         }
 
+        public Task<SettingsSet<T, T>> Load<T>([NotNull] string fileName) where T : class
+            => this.Load<T, T>(fileName);
         public async Task<SettingsSet<T, TFreezed>> Load<T, TFreezed>([NotNull] string fileName) where T: class
         {
             if (string.IsNullOrEmpty(fileName))
@@ -47,10 +49,15 @@
             return result;
         }
 
+        public Task<SettingsSet<T, T>> LoadOrCreate<T>([NotNull] string fileName) where T : class, new()
+            => this.LoadOrCreate<T, T>(fileName, () => new T());
         public Task<SettingsSet<T, TFreezed>> LoadOrCreate<T, TFreezed>([NotNull] string fileName)
             where T : class, new()
             => this.LoadOrCreate<T, TFreezed>(fileName, () => new T());
 
+        public Task<SettingsSet<T, T>> LoadOrCreate<T>([NotNull] string fileName, Func<T> defaultSettings)
+            where T : class
+            => this.LoadOrCreate<T, T>(fileName, defaultSettings);
         public async Task<SettingsSet<T, TFreezed>> LoadOrCreate<T, TFreezed>([NotNull] string fileName, Func<T> defaultSettings)
             where T : class
         {
