@@ -1,6 +1,7 @@
 ﻿namespace LostTech.App
 {
     using System;
+    using System.Collections.Specialized;
     using System.ComponentModel;
     using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
@@ -33,6 +34,7 @@
                 trackable.PropertyChanged += this.SettingChanged;
                 this.changeListener = ChangeListener.Create(trackable);
                 this.changeListener.PropertyChanged += this.SettingChanged;
+                this.changeListener.CollectionChanged += this.SettingChanged;
             }
         }
 
@@ -49,9 +51,10 @@
             }
         }
 
-        private void SettingChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (Autosave)
+        void SettingChanged(object sender, EventArgs e) => this.AutosaveCheckpoint();
+
+        void AutosaveCheckpoint() {
+            if (this.Autosave)
                 this.ScheduleSave();
         }
 

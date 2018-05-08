@@ -6,8 +6,8 @@
     <RootNamespace>LostTech.App</RootNamespace>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     
-    <VersionPrefix>0.2</VersionPrefix>
-    <AssemblyVersion>0.2</AssemblyVersion>
+    <VersionPrefix>0.3</VersionPrefix>
+    <AssemblyVersion>0.3</AssemblyVersion>
     <Authors>Victor Milovanov</Authors>
     <Company>Lost Tech LLC</Company>
     <Product>LostTech.App</Product>
@@ -20,11 +20,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
+    <PackageReference Include="JetBrains.Annotations" Version="11.1.0" />
     <PackageReference Include="LostTech.App.DataBinding" Version="0.1.0" />
-    <PackageReference Include="LostTech.Checkpoint" Version="0.2.0-b2017040802" />
+    <PackageReference Include="LostTech.Checkpoint" Version="0.2.0" />
     <PackageReference Include="PCLStorage.Abstractions" Version="1.0.4-b2017032801" />
-    <PackageReference Include="RecursiveChangeNotifier" Version="0.3.0-b2017050701" />
+    <PackageReference Include="RecursiveChangeNotifier" Version="0.4.0-b3" />
   </ItemGroup>
 
 </Project>
