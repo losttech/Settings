@@ -2,21 +2,20 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
     using JetBrains.Annotations;
-    using PCLStorage;
-    using FileAccess = PCLStorage.FileAccess;
 
     public sealed class Settings: ISettingsSet
     {
-        readonly IFolder folder;
+        readonly DirectoryInfo folder;
         readonly IFreezerFactory freezerFactory;
         readonly ISerializerFactory serializerFactory;
         readonly IDeserializerFactory deserializerFactory;
         readonly Stack<ISettingsSet> loadedSettings = new Stack<ISettingsSet>();
 
-        public Settings([NotNull] IFolder folder,
+        public Settings([NotNull] DirectoryInfo folder,
             [NotNull] IFreezerFactory freezerFactory,
             [NotNull] ISerializerFactory serializerFactory,
             [NotNull] IDeserializerFactory deserializerFactory)
@@ -34,13 +33,13 @@
             if (string.IsNullOrEmpty(fileName))
                 throw new ArgumentNullException(nameof(fileName));
 
-            var file = await this.folder.GetFile(fileName).ConfigureAwait(false);
-            if (file == null)
+            FileInfo file = new FileInfo(Path.Combine(this.folder.FullName, fileName));
+            if (!file.Exists)
                 return null;
 
             T value;
-            using (var stream = await file.OpenAsync(FileAccess.Read).ConfigureAwait(false))
-                value = await deserializerFactory.MakeDeserializer<T>()(stream).ConfigureAwait(false);
+            using (var stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+                value = await this.deserializerFactory.MakeDeserializer<T>()(stream).ConfigureAwait(false);
 
             var result = new SettingsSet<T, TFreezed>(file, value,
                 this.freezerFactory.MakeFreezer<T, TFreezed>(),
@@ -68,7 +67,8 @@
             if (settings != null)
                 return settings;
 
-            var file = await this.folder.CreateFileAsync(fileName, CreationCollisionOption.FailIfExists).ConfigureAwait(false);
+            FileInfo file = new FileInfo(Path.Combine(this.folder.FullName, fileName));
+            file.Create().Dispose();
             var result = new SettingsSet<T, TFreezed>(file, defaultSettings(),
                 this.freezerFactory.MakeFreezer<T, TFreezed>(),
                 this.serializerFactory.MakeSerializer<TFreezed>());

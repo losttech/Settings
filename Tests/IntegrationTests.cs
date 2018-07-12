@@ -14,11 +14,11 @@
         public async Task ActuallySaves()
         {
             string temp = Path.Combine(Path.GetTempPath(), nameof(IntegrationTests), Guid.NewGuid().ToString());
-            Directory.CreateDirectory(temp);
+            DirectoryInfo directory = Directory.CreateDirectory(temp);
             string value = new string('X', 3013);
             try {
-                IFolder directory = await FileSystem.Current.GetFolderFromPathAsync(temp);
-                IFile file = await directory.CreateFileAsync(nameof(this.ActuallySaves), CreationCollisionOption.ReplaceExisting);
+                FileInfo file = new FileInfo(Path.Combine(directory.FullName, nameof(this.ActuallySaves)));
+                file.Create().Close();
                 var settingsSet = new SettingsSet<string, byte[]>(file, value, 
                     freezer: s => Encoding.UTF8.GetBytes(s),
                     serializer: async (stream, data) => {
@@ -28,7 +28,7 @@
                 settingsSet.ScheduleSave();
                 await settingsSet.DisposeAsync();
 
-                Assert.AreEqual(value, await file.ReadAllTextAsync());
+                Assert.AreEqual(value, File.ReadAllText(file.FullName));
             }
             finally {
                 Directory.Delete(temp, recursive: true);

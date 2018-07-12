@@ -1,28 +1,27 @@
 ﻿namespace LostTech.App
 {
     using System;
-    using System.Collections.Specialized;
     using System.ComponentModel;
+    using System.IO;
     using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
 
     using JetBrains.Annotations;
     using LostTech.Checkpoint;
-    using PCLStorage;
     using ThomasJaworski.ComponentModel;
     using Stream = System.IO.Stream;
 
     public sealed class SettingsSet<T, TFreezed>: ISettingsSet, INotifyPropertyChanged
         where T: class
     {
-        readonly IFile file;
+        readonly FileInfo file;
         readonly AsyncChainService autosaveService = new AsyncChainService();
         readonly ChangeListener changeListener;
         readonly Func<T, TFreezed> freezer;
         readonly Func<Stream, TFreezed, Task> serializer;
         bool autosave;
 
-        internal SettingsSet([NotNull] IFile file, [NotNull] T value,
+        internal SettingsSet([NotNull] FileInfo file, [NotNull] T value,
             [NotNull] Func<T, TFreezed> freezer, [NotNull] Func<Stream, TFreezed, Task> serializer)
         {
             this.file = file ?? throw new ArgumentNullException(nameof(file));
@@ -67,13 +66,12 @@
             async Task<Exception> TrySave()
             {
                 try {
-                    using (var stream = await this.file.OpenAsync(FileAccess.ReadAndWrite).ConfigureAwait(false)) {
-                        stream.SetLength(0);
+                    using (var stream = this.file.Open(FileMode.Create)) {
                         await this.serializer(stream, frozenCopy).ConfigureAwait(false);
                         await stream.FlushAsync().ConfigureAwait(false);
                     }
                     return null;
-                } catch (System.IO.IOException e) when (e.HResult == FileShareViolation) {
+                } catch (IOException e) when (e.HResult == FileShareViolation) {
                     return e;
                 }
             }
@@ -87,7 +85,7 @@
             if (initialRetryDelayMs < 0)
                 throw new ArgumentOutOfRangeException(nameof(initialRetryDelayMs));
 
-            Exception lastError = null;
+            Exception lastError = new InvalidProgramException();
             for (int i = 0; i < attemptCount; i++)
             {
                 lastError = await action().ConfigureAwait(false);
