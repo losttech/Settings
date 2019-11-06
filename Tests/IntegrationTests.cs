@@ -5,7 +5,6 @@
     using System.Text;
     using System.Threading.Tasks;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using PCLStorage;
 
     [TestClass]
     public class IntegrationTests
