@@ -17,6 +17,7 @@
 - data bindable</Description>
     <RepositoryType>git</RepositoryType>
     <PackageTags>app settings async autosave</PackageTags>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,6 +25,13 @@
     <PackageReference Include="LostTech.App.DataBinding" Version="0.1.0" />
     <PackageReference Include="LostTech.Checkpoint" Version="0.2.0" />
     <PackageReference Include="RecursiveChangeNotifier" Version="0.4.0-b3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
