@@ -12,7 +12,7 @@
         readonly IFreezerFactory freezerFactory;
         readonly ISerializerFactory serializerFactory;
         readonly IDeserializerFactory deserializerFactory;
-        readonly Stack<ISettingsSet> loadedSettings = new Stack<ISettingsSet>();
+        readonly Stack<ISettingsSet> loadedSettings = new();
 
         public Settings(DirectoryInfo folder,
             IFreezerFactory freezerFactory,
@@ -32,7 +32,7 @@
             if (string.IsNullOrEmpty(fileName))
                 throw new ArgumentNullException(nameof(fileName));
 
-            FileInfo file = new FileInfo(Path.Combine(this.folder.FullName, fileName));
+            var file = new FileInfo(Path.Combine(this.folder.FullName, fileName));
             if (!file.Exists)
                 return null;
 
@@ -66,7 +66,7 @@
             if (settings != null)
                 return settings;
 
-            FileInfo file = new FileInfo(Path.Combine(this.folder.FullName, fileName));
+            var file = new FileInfo(Path.Combine(this.folder.FullName, fileName));
             file.Create().Dispose();
             var result = new SettingsSet<T, TFreezed>(file, defaultSettings(),
                 this.freezerFactory.MakeFreezer<T, TFreezed>(),
