@@ -16,7 +16,9 @@
             if (!typeof(T).GetTypeInfo().ImplementedInterfaces.Any(@interface => @interface == typeof(ICopyable<TFreezed>)))
                 throw new NotSupportedException($"This factory requires {nameof(T)} to implement {nameof(ICopyable<TFreezed>)}");
 
-            return value => ((ICopyable<TFreezed>)value).Copy();
+            return value => value is null
+                                ? throw new ArgumentNullException(nameof(value))
+                                : ((ICopyable<TFreezed>)value).Copy();
         }
     }
 }

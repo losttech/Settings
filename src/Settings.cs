@@ -5,7 +5,6 @@
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
-    using JetBrains.Annotations;
 
     public sealed class Settings: ISettingsSet
     {
@@ -15,10 +14,10 @@
         readonly IDeserializerFactory deserializerFactory;
         readonly Stack<ISettingsSet> loadedSettings = new Stack<ISettingsSet>();
 
-        public Settings([NotNull] DirectoryInfo folder,
-            [NotNull] IFreezerFactory freezerFactory,
-            [NotNull] ISerializerFactory serializerFactory,
-            [NotNull] IDeserializerFactory deserializerFactory)
+        public Settings(DirectoryInfo folder,
+            IFreezerFactory freezerFactory,
+            ISerializerFactory serializerFactory,
+            IDeserializerFactory deserializerFactory)
         {
             this.folder = folder ?? throw new ArgumentNullException(nameof(folder));
             this.freezerFactory = freezerFactory ?? throw new ArgumentNullException(nameof(freezerFactory));
@@ -26,9 +25,9 @@
             this.deserializerFactory = deserializerFactory ?? throw new ArgumentNullException(nameof(deserializerFactory));
         }
 
-        public Task<SettingsSet<T, T>> Load<T>([NotNull] string fileName) where T : class
+        public Task<SettingsSet<T, T>?> Load<T>(string fileName) where T : class
             => this.Load<T, T>(fileName);
-        public async Task<SettingsSet<T, TFreezed>> Load<T, TFreezed>([NotNull] string fileName) where T: class
+        public async Task<SettingsSet<T, TFreezed>?> Load<T, TFreezed>(string fileName) where T: class
         {
             if (string.IsNullOrEmpty(fileName))
                 throw new ArgumentNullException(nameof(fileName));
@@ -48,16 +47,16 @@
             return result;
         }
 
-        public Task<SettingsSet<T, T>> LoadOrCreate<T>([NotNull] string fileName) where T : class, new()
+        public Task<SettingsSet<T, T>> LoadOrCreate<T>(string fileName) where T : class, new()
             => this.LoadOrCreate<T, T>(fileName, () => new T());
-        public Task<SettingsSet<T, TFreezed>> LoadOrCreate<T, TFreezed>([NotNull] string fileName)
+        public Task<SettingsSet<T, TFreezed>> LoadOrCreate<T, TFreezed>(string fileName)
             where T : class, new()
             => this.LoadOrCreate<T, TFreezed>(fileName, () => new T());
 
-        public Task<SettingsSet<T, T>> LoadOrCreate<T>([NotNull] string fileName, Func<T> defaultSettings)
+        public Task<SettingsSet<T, T>> LoadOrCreate<T>(string fileName, Func<T> defaultSettings)
             where T : class
             => this.LoadOrCreate<T, T>(fileName, defaultSettings);
-        public async Task<SettingsSet<T, TFreezed>> LoadOrCreate<T, TFreezed>([NotNull] string fileName, Func<T> defaultSettings)
+        public async Task<SettingsSet<T, TFreezed>> LoadOrCreate<T, TFreezed>(string fileName, Func<T> defaultSettings)
             where T : class
         {
             if (defaultSettings == null)

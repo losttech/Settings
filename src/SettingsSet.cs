@@ -6,7 +6,6 @@
     using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
 
-    using JetBrains.Annotations;
     using LostTech.Checkpoint;
     using ThomasJaworski.ComponentModel;
     using Stream = System.IO.Stream;
@@ -15,14 +14,14 @@
         where T: class
     {
         readonly FileInfo file;
-        readonly AsyncChainService autosaveService = new AsyncChainService();
-        readonly ChangeListener changeListener;
+        readonly AsyncChainService autosaveService = new();
+        readonly ChangeListener? changeListener;
         readonly Func<T, TFreezed> freezer;
         readonly Func<Stream, TFreezed, Task> serializer;
         bool autosave;
 
-        internal SettingsSet([NotNull] FileInfo file, [NotNull] T value,
-            [NotNull] Func<T, TFreezed> freezer, [NotNull] Func<Stream, TFreezed, Task> serializer)
+        internal SettingsSet(FileInfo file, T value,
+            Func<T, TFreezed> freezer, Func<Stream, TFreezed, Task> serializer)
         {
             this.file = file ?? throw new ArgumentNullException(nameof(file));
             this.Value = value ?? throw new ArgumentNullException(nameof(value));
@@ -37,13 +36,10 @@
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        public bool Autosave
-        {
-            get {
-                return this.autosave;
-            }
+        public bool Autosave {
+            get => this.autosave;
             set {
                 this.autosave = value;
                 this.OnPropertyChanged();
@@ -63,7 +59,7 @@
         {
             var frozenCopy = this.freezer(this.Value);
 
-            async Task<Exception> TrySave()
+            async Task<Exception?> TrySave()
             {
                 try {
                     using (var stream = this.file.Open(FileMode.Create)) {
@@ -78,14 +74,14 @@
             this.autosaveService.Chain(() => Retry(TrySave));
         }
 
-        static async Task Retry(Func<Task<Exception>> action, int attemptCount = 5, int initialRetryDelayMs = 250)
+        static async Task Retry(Func<Task<Exception?>> action, int attemptCount = 5, int initialRetryDelayMs = 250)
         {
             if (attemptCount <= 0)
                 throw new ArgumentOutOfRangeException(nameof(attemptCount));
             if (initialRetryDelayMs < 0)
                 throw new ArgumentOutOfRangeException(nameof(initialRetryDelayMs));
 
-            Exception lastError = new InvalidProgramException();
+            Exception? lastError = new InvalidProgramException();
             for (int i = 0; i < attemptCount; i++)
             {
                 lastError = await action().ConfigureAwait(false);
@@ -99,7 +95,6 @@
             throw lastError;
         }
 
-        [NotNull]
         public T Value { get; }
 
         public Task DisposeAsync()
@@ -108,8 +103,9 @@
             return this.autosaveService.DisposeAsync();
         }
 
-        [NotifyPropertyChangedInvocator]
-        void OnPropertyChanged([CallerMemberName] string propertyName = null) =>
+        void OnPropertyChanged([CallerMemberName] string propertyName = null!) {
+            if (propertyName is null) throw new ArgumentNullException(nameof(propertyName));
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

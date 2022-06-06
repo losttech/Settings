@@ -14,9 +14,9 @@
         {
             string temp = Path.Combine(Path.GetTempPath(), nameof(IntegrationTests), Guid.NewGuid().ToString());
             DirectoryInfo directory = Directory.CreateDirectory(temp);
-            string value = new string('X', 3013);
+            string value = new('X', 3013);
             try {
-                FileInfo file = new FileInfo(Path.Combine(directory.FullName, nameof(this.ActuallySaves)));
+                var file = new FileInfo(Path.Combine(directory.FullName, nameof(this.ActuallySaves)));
                 file.Create().Close();
                 var settingsSet = new SettingsSet<string, byte[]>(file, value, 
                     freezer: s => Encoding.UTF8.GetBytes(s),

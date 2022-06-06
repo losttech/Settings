@@ -4,6 +4,8 @@
     <TargetFramework>netstandard1.4</TargetFramework>
     <AssemblyName>LostTech.App.Settings</AssemblyName>
     <RootNamespace>LostTech.App</RootNamespace>
+    <LangVersion>10.0</LangVersion>
+    <Nullable>enable</Nullable>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 
     <VersionPrefix>0.5</VersionPrefix>
@@ -18,12 +20,18 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>app settings async autosave</PackageTags>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+
+    <!-- The following is recommended for public projects -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <DebugSymbols>true</DebugSymbols>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="11.1.0" />
     <PackageReference Include="LostTech.App.DataBinding" Version="0.1.0" />
     <PackageReference Include="LostTech.Checkpoint" Version="0.2.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="RecursiveChangeNotifier" Version="0.4.0" />
   </ItemGroup>
 
