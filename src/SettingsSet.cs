@@ -10,18 +10,26 @@
     using ThomasJaworski.ComponentModel;
     using Stream = System.IO.Stream;
 
-    public sealed class SettingsSet<T, TFreezed>: ISettingsSet, INotifyPropertyChanged
+    /// <summary>
+    /// A set of settings, saved in its own file
+    /// </summary>
+    /// <typeparam name="T">Type of the object, that contains the settings in the set</typeparam>
+    /// <typeparam name="TFrozen">
+    /// Type of the object, that represents a snapshot of the settings.
+    /// Usually the same as <typeparamref name="T"/>.
+    /// </typeparam>
+    public sealed class SettingsSet<T, TFrozen>: ISettingsSet, INotifyPropertyChanged
         where T: class
     {
         readonly FileInfo file;
         readonly AsyncChainService autosaveService = new();
         readonly ChangeListener? changeListener;
-        readonly Func<T, TFreezed> freezer;
-        readonly Func<Stream, TFreezed, Task> serializer;
+        readonly Func<T, TFrozen> freezer;
+        readonly Func<Stream, TFrozen, Task> serializer;
         bool autosave;
 
         internal SettingsSet(FileInfo file, T value,
-            Func<T, TFreezed> freezer, Func<Stream, TFreezed, Task> serializer)
+            Func<T, TFrozen> freezer, Func<Stream, TFrozen, Task> serializer)
         {
             this.file = file ?? throw new ArgumentNullException(nameof(file));
             this.Value = value ?? throw new ArgumentNullException(nameof(value));
@@ -37,9 +45,18 @@
             this.autosaveService.TaskException += this.AutosaveService_TaskException;
         }
 
+        /// <inheritdoc/>
         public event PropertyChangedEventHandler? PropertyChanged;
+        /// <summary>
+        /// Occurs when attempt to save settings generates an exception.
+        /// </summary>
         public event EventHandler<UnobservedTaskExceptionEventArgs>? SaveException;
 
+        /// <summary>
+        /// Enables saving settings every time they change
+        /// </summary>
+        /// <remarks>Settings object must implement property change notifications,
+        /// including nested objects.</remarks>
         public bool Autosave {
             get => this.autosave;
             set {
@@ -57,6 +74,7 @@
 
         const int FileShareViolation = unchecked((int)0x80070020);
 
+        /// <inheritdoc/>
         public void ScheduleSave()
         {
             var frozenCopy = this.freezer(this.Value);
@@ -97,11 +115,18 @@
             throw lastError;
         }
 
+        /// <summary>
+        /// An instance of the settings.
+        /// </summary>
         public T Value { get; }
 
+        /// <inheritdoc/>
         public Task DisposeAsync()
         {
             this.changeListener?.Dispose();
+            if (this.Value is INotifyPropertyChanged trackable) {
+                trackable.PropertyChanged -= this.SettingChanged;
+            }
             return this.autosaveService.DisposeAsync();
         }
 

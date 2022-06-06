@@ -7,6 +7,7 @@
     <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
     <VersionPrefix>0.5</VersionPrefix>
     <AssemblyVersion>0.5</AssemblyVersion>
