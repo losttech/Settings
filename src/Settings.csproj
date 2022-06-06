@@ -5,10 +5,10 @@
     <AssemblyName>LostTech.App.Settings</AssemblyName>
     <RootNamespace>LostTech.App</RootNamespace>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    
-    <VersionPrefix>0.4</VersionPrefix>
-    <AssemblyVersion>0.4</AssemblyVersion>
-    <Authors>Victor Milovanov</Authors>
+
+    <VersionPrefix>0.5</VersionPrefix>
+    <AssemblyVersion>0.5</AssemblyVersion>
+    <Authors>Victor Nova</Authors>
     <Company>Lost Tech LLC</Company>
     <Product>LostTech.App</Product>
     <Description>Better way to store your app's settings. Key features:
