@@ -34,9 +34,11 @@
                 this.changeListener.PropertyChanged += this.SettingChanged;
                 this.changeListener.CollectionChanged += this.SettingChanged;
             }
+            this.autosaveService.TaskException += this.AutosaveService_TaskException;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
+        public event EventHandler<UnobservedTaskExceptionEventArgs>? SaveException;
 
         public bool Autosave {
             get => this.autosave;
@@ -102,6 +104,9 @@
             this.changeListener?.Dispose();
             return this.autosaveService.DisposeAsync();
         }
+
+        void AutosaveService_TaskException(object sender, UnobservedTaskExceptionEventArgs e)
+            => this.SaveException?.Invoke(this, e);
 
         void OnPropertyChanged([CallerMemberName] string propertyName = null!) {
             if (propertyName is null) throw new ArgumentNullException(nameof(propertyName));
