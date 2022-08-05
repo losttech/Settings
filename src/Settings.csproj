@@ -9,8 +9,8 @@
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
-    <VersionPrefix>0.5</VersionPrefix>
-    <AssemblyVersion>0.5</AssemblyVersion>
+    <VersionPrefix>0.6</VersionPrefix>
+    <AssemblyVersion>0.6</AssemblyVersion>
     <Authors>Victor Nova</Authors>
     <Company>Lost Tech LLC</Company>
     <Product>LostTech.App</Product>
@@ -33,7 +33,7 @@
     <PackageReference Include="LostTech.App.DataBinding" Version="0.1.0" />
     <PackageReference Include="LostTech.Checkpoint" Version="0.3.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="RecursiveChangeNotifier" Version="0.4.0" />
+    <PackageReference Include="RecursiveChangeNotifier" Version="0.5.0-a1" />
   </ItemGroup>
 
   <ItemGroup>
